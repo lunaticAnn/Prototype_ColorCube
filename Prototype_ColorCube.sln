@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prototype_ColorCube", "Prototype_ColorCube.csproj", "{CC09A795-A047-D3EA-925B-4F354490DA20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prototype_ColorCube.Editor", "Prototype_ColorCube.Editor.csproj", "{D45F0492-0F84-3D54-0070-90BB41EBD66F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CC09A795-A047-D3EA-925B-4F354490DA20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC09A795-A047-D3EA-925B-4F354490DA20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC09A795-A047-D3EA-925B-4F354490DA20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC09A795-A047-D3EA-925B-4F354490DA20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D45F0492-0F84-3D54-0070-90BB41EBD66F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D45F0492-0F84-3D54-0070-90BB41EBD66F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D45F0492-0F84-3D54-0070-90BB41EBD66F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D45F0492-0F84-3D54-0070-90BB41EBD66F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
