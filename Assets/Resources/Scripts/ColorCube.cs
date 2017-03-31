@@ -7,6 +7,7 @@ public class ColorCube : MonoBehaviour {
     const float EDGE_LENGTH = 1f;
     const float DELTA_V = 0.1f;
     const float LINE_WIDTH = 0.05f;
+    const float BREATH = 0.0003f;
 
     public int x, y, z;
     public Material mat;
@@ -115,16 +116,39 @@ public class ColorCube : MonoBehaviour {
                         max_v = Mathf.Max(v, max_v);
                     }
             _par.SetParticles(pars, vertice_cnt);
-            if (lines.Count == 0)
+
+            if(lines.Count == 0)
                 init_cubelines(pars);
             else 
                 update_pos_cubelines();
             yield return new WaitForEndOfFrame();
+            
         } while (max_v > 1e-3);
         Debug.Log("Initialize finished.");
-        
-        
+
         //create lines here
+        StartCoroutine("slightly_movement");
+    }
+
+    IEnumerator slightly_movement() {
+        int i, j, k;
+        while (true)
+        {
+            int current_alive = _par.GetParticles(pars);
+            if (current_alive != vertice_cnt)
+            {
+                Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
+            }
+            for (i = 0; i < x; i++)
+                for (j = 0; j < y; j++)
+                    for (k = 0; k < z; k++)
+                        pars[indexed_xyz[i, j, k]].position += Mathf.Sin(Time.time +2 * Mathf.PI * i / x + Mathf.PI * j / y)* BREATH *Vector3.up;
+                 
+            _par.SetParticles(pars, vertice_cnt);   
+             update_pos_cubelines();
+            yield return new WaitForEndOfFrame();
+        }
+
     }
 
 
