@@ -169,22 +169,22 @@ public class CubeController : MonoBehaviour {
         if (axis_id == 0) {
             if (choice == 0)
             {
-                init_bound[0] = 4;
-                init_bound[1] = 8;
+                init_bound[0] = x / 2;
+                init_bound[1] = x;
                 init_bound[2] = 0;
-                init_bound[3] = 8;
+                init_bound[3] = y;
                 init_bound[4] = 0;
-                init_bound[5] = 8;
+                init_bound[5] = z;
                 return;
             }
             if (choice == 1)
             {
                 init_bound[0] = 0;
-                init_bound[1] = 4;
+                init_bound[1] = x / 2;
                 init_bound[2] = 0;
-                init_bound[3] = 8;
+                init_bound[3] = y;
                 init_bound[4] = 0;
-                init_bound[5] = 8;
+                init_bound[5] = z;
                 return;
             }
         }
@@ -193,21 +193,21 @@ public class CubeController : MonoBehaviour {
             if (choice == 0)
             {
                 init_bound[0] = 0;
-                init_bound[1] = 8;
-                init_bound[2] = 4;
-                init_bound[3] = 8;
+                init_bound[1] = x;
+                init_bound[2] = y / 2;
+                init_bound[3] = y;
                 init_bound[4] = 0;
-                init_bound[5] = 8;
+                init_bound[5] = z;
                 return;
             }
             if (choice == 1)
             {
                 init_bound[0] = 0;
-                init_bound[1] = 8;
+                init_bound[1] = x;
                 init_bound[2] = 0;
-                init_bound[3] = 4;
+                init_bound[3] = y / 2;
                 init_bound[4] = 0;
-                init_bound[5] = 8;
+                init_bound[5] = x;
                 return;
             }
         }
@@ -216,21 +216,21 @@ public class CubeController : MonoBehaviour {
             if (choice == 0)
             {
                 init_bound[0] = 0;
-                init_bound[1] = 8;
+                init_bound[1] = x;
                 init_bound[2] = 0;
-                init_bound[3] = 8;
-                init_bound[4] = 4;
-                init_bound[5] = 8;
+                init_bound[3] = y;
+                init_bound[4] = z / 2;
+                init_bound[5] = z;
                 return;
             }
             if (choice == 1)
             {
                 init_bound[0] = 0;
-                init_bound[1] = 8;
+                init_bound[1] = x;
                 init_bound[2] = 0;
-                init_bound[3] = 8;
+                init_bound[3] = y;
                 init_bound[4] = 0;
-                init_bound[5] = 4;
+                init_bound[5] = z / 2;
                 return;
             }
         }
