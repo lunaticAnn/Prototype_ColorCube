@@ -10,6 +10,7 @@ public class CubeController : MonoBehaviour {
     public int x, y, z;
     public enum cube_state {free, wait_choose};
     public cube_state st;
+    public Transform righthand;
 
     //color pallate when x,y,z = 0;
     public Color corner000;
@@ -50,10 +51,15 @@ public class CubeController : MonoBehaviour {
                     split_cube(2);
                 return;
             case cube_state.wait_choose:
-                if (OVRInput.GetDown(OVRInput.Button.One) || Input.GetKeyDown(KeyCode.Z))
-                    choose(0);
-                else if (OVRInput.GetDown(OVRInput.Button.Three)|| Input.GetKeyDown(KeyCode.X))
-                    choose(1);
+                if (OVRInput.GetDown(OVRInput.Button.One)) {
+                    float dis0 = Vector3.Distance(cube_temp0.transform.position, righthand.position);
+                    float dis1 = Vector3.Distance(cube_temp1.transform.position, righthand.position);
+                    if (dis0 - dis1 < 0f)
+                        choose(0);
+                    else
+                        choose(1);
+                }
+                    
                 return;
 
             default: return;
