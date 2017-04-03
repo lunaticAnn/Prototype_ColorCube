@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class ColorCube : MonoBehaviour {
     //vertice number in 3 dimensions
-    const float EDGE_LENGTH = 1f;
+    public const float EDGE_LENGTH = 1f;
     const float DELTA_V = 0.1f;
     const float LINE_WIDTH = 0.05f;
     const float BREATH = 0.0003f;
 
     public int x, y, z;
     public Material mat;
+    public Color color_zero;
+    public Color color_one;
 
     int vertice_cnt;
     int line_num;
@@ -29,20 +31,36 @@ public class ColorCube : MonoBehaviour {
 
     List<line_se> lines= new List<line_se>();
 
-    void Awake()
-	{
+    /// <summary>
+    /// instantiate a new colorcube
+    /// </summary>
+    /// <param name="x"> vertices on x -axis</param>
+    /// <param name="y"> vertices on y-axis</param>
+    /// <param name="z"> vertices on z-axis</param>
+    /// <param name="mat"> material for line renderers </param>
+    /// <param name="center"> center postion </param>
+    /// <param name="quick_instance"> whether to perform the initializing animation </param>
+    public void setColorCube(int _x, int _y, int _z, Material _mat, Color _color_zero, Color _color_one) {
+        this.x = _x;
+        this.y = _y;
+        this.z = _z;
+        this.mat = _mat;
+        this.color_zero = _color_zero;
+        this.color_one = _color_one;
+    }
+
+    public void Init_my_cube(bool quick_instance = false){
         _par = GetComponent<ParticleSystem>();
         indexing();
         init_pos();
         var ma = _par.main;
         ma.maxParticles = vertice_cnt;
-	}
 
-    void Start() {
         //emit particles, and set it on the correct position
         _par.Emit(vertice_cnt);
         particle_init();
-        StartCoroutine("init_colorcube");
+        IEnumerator c = init_colorcube(quick_instance);
+        StartCoroutine(c);
     }
 
     void indexing() {
@@ -51,7 +69,7 @@ public class ColorCube : MonoBehaviour {
         for (i = 0; i < x; i++)
             for (j = 0; j < y; j++)
                 for (k = 0; k < z; k++)
-                    indexed_xyz[i, j, k] = (i * x + j) * y + k;
+                    indexed_xyz[i, j, k] = (i * y + j) * z + k;
         Debug.Log("Indexing finished.");
     }
     
@@ -60,13 +78,19 @@ public class ColorCube : MonoBehaviour {
         vertice_cnt = x * y * z;
         pos = new Vector3[vertice_cnt];
         color = new Color[vertice_cnt];
-        Vector3 recenter_offset = 0.5f * EDGE_LENGTH * new Vector3(-x, -y, -z);
+        Vector3 recenter_offset = -0.5f * EDGE_LENGTH * new Vector3(x-1, y-1, z-1);
         int i, j, k;
         for (i = 0; i < x; i++)
             for (j = 0; j < y; j++)
                 for (k = 0; k < z; k++){
                     pos[indexed_xyz[i, j, k]] = recenter_offset + new Vector3(i * EDGE_LENGTH, j * EDGE_LENGTH, k * EDGE_LENGTH);
-                    color[indexed_xyz[i, j, k]] = new Color ((1f * i)/x, (1f * j) / y, (1f * k) / z);
+
+                    //index color, bilinear interpolation
+                    float inter_r = (i * color_zero.r + (x - i) * color_one.r) / x;
+                    float inter_g = (j * color_zero.g + (y - j) * color_one.g) / y;
+                    float inter_b = (k * color_zero.b + (z - k) * color_one.b) / z;
+                    color[indexed_xyz[i, j, k]] = new Color (inter_r, inter_g, inter_b);
+
                 }
 
         }
@@ -99,31 +123,56 @@ public class ColorCube : MonoBehaviour {
         return Vector3.Magnitude(delta);
     }
 
-
-    IEnumerator init_colorcube() {
+    
+    IEnumerator init_colorcube(bool quick_instance = false) {
         int i,j,k;
         float max_v = -1f ;
-        do {
-            max_v = -1f;
+        //without animation
+        if (quick_instance)
+        {
             int current_alive = _par.GetParticles(pars);
-            if (current_alive != vertice_cnt){
+            if (current_alive != vertice_cnt)
+            {
                 Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
             }
+            // put all particles onto traget position
             for (i = 0; i < x; i++)
                 for (j = 0; j < y; j++)
-                    for (k = 0; k < z; k++) {
-                        float v = fly_to_dest(ref pars[indexed_xyz[i, j, k]], pos[indexed_xyz[i, j, k]]);
-                        max_v = Mathf.Max(v, max_v);
+                    for (k = 0; k < z; k++){
+                        pars[indexed_xyz[i, j, k]].position = pos[indexed_xyz[i, j, k]];
                     }
+            //init cube lines
             _par.SetParticles(pars, vertice_cnt);
-
-            if(lines.Count == 0)
-                init_cubelines(pars);
-            else 
-                update_pos_cubelines();
+            init_cubelines(pars);
             yield return new WaitForEndOfFrame();
-            
-        } while (max_v > 1e-3);
+        }
+        //with animation
+        else
+            do
+            {
+                max_v = -1f;
+                int current_alive = _par.GetParticles(pars);
+                if (current_alive != vertice_cnt)
+                {
+                    Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
+                }
+                for (i = 0; i < x; i++)
+                    for (j = 0; j < y; j++)
+                        for (k = 0; k < z; k++)
+                        {
+                            float v = fly_to_dest(ref pars[indexed_xyz[i, j, k]], pos[indexed_xyz[i, j, k]]);
+                            max_v = Mathf.Max(v, max_v);
+                        }
+                _par.SetParticles(pars, vertice_cnt);
+
+                if (lines.Count == 0)
+                    init_cubelines(pars);
+                else
+                    update_pos_cubelines();
+                yield return new WaitForEndOfFrame();
+
+            } while (max_v > 1e-3);
+
         Debug.Log("Initialize finished.");
 
         //create lines here
@@ -156,7 +205,9 @@ public class ColorCube : MonoBehaviour {
         GameObject short_line = new GameObject("Line");
         short_line.transform.SetParent(transform);
         LineRenderer lr = short_line.AddComponent<LineRenderer>();
+        lr.useWorldSpace = false;
         lr.material = mat;
+        short_line.transform.localPosition = Vector3.zero;
         return lr;
     }
 
@@ -165,7 +216,7 @@ public class ColorCube : MonoBehaviour {
         lr.startWidth = LINE_WIDTH;
         lr.endWidth = LINE_WIDTH;
         lr.startColor = p1.GetCurrentColor(_par);
-        lr.endColor = p2.GetCurrentColor(_par);
+        lr.endColor = p2.GetCurrentColor(_par); 
         lr.numPositions = 2;
         lr.SetPositions(new Vector3[2] {p1.position, p2.position});
     }

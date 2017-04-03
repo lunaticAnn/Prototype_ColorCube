@@ -10,22 +10,19 @@ public class TestMask : MonoBehaviour {
 
     }
 
-    void Update() {
-        transform.position = new Vector3(transform.position.x, center_eye.position.y, transform.position.z);
-        if (OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger) || Input.GetKeyDown(KeyCode.A)) {
-            if (!locker){
-                Debug.Log("start");
-                StartCoroutine("Wave");
-                locker = true;
-            }
-        }
+    public void start_wave() {
+        transform.position =center_eye.position;      
+        if (!locker){
+            Debug.Log("start");
+            StartCoroutine("Wave");
+            locker = true;
+        }    
     }
 
     // Update is called once per frame
     IEnumerator Wave () {
         int i = 0;
-        while (i < 120)
-        {
+        while (i < 120){
             transform.localScale = new Vector3(10f * i, 10f * i, 500f);
             i++;
             yield return new WaitForEndOfFrame();
