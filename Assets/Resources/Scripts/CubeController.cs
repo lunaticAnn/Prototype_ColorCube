@@ -124,8 +124,8 @@ public class CubeController : MonoBehaviour {
             //set new corner color
             corner111 = color_temp0;
             current_cube = create_color_cube(x, y, z, Vector3.zero, corner000, corner111);
-            Destroy(cube_temp0);
-            Destroy(cube_temp1);
+            cube_temp0.GetComponent<ColorCube>().delete_me();
+            cube_temp1.GetComponent<ColorCube>().delete_me(false);
             //set state
             st = cube_state.free;
             return;
@@ -136,8 +136,8 @@ public class CubeController : MonoBehaviour {
             corner000 = color_temp1;
             current_cube = create_color_cube(x, y, z, Vector3.zero, corner000, corner111);
             //set state
-            Destroy(cube_temp0);
-            Destroy(cube_temp1);
+            cube_temp0.GetComponent<ColorCube>().delete_me(false);
+            cube_temp1.GetComponent<ColorCube>().delete_me();
             st = cube_state.free;
             return;
         }

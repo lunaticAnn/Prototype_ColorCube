@@ -5,7 +5,7 @@ using UnityEngine;
 public class ColorCube : MonoBehaviour {
     //vertice number in 3 dimensions
     public const float EDGE_LENGTH = 1f;
-    const float DELTA_V = 0.1f;
+    const float DELTA_V = 0.02f;
     const float LINE_WIDTH = 0.05f;
     const float BREATH = 0.0003f;
 
@@ -223,6 +223,8 @@ public class ColorCube : MonoBehaviour {
 
     void update_pos_line(ParticleSystem.Particle p1, ParticleSystem.Particle p2, LineRenderer lr) {
         lr.SetPositions(new Vector3[2] { p1.position, p2.position });
+        lr.startColor = p1.GetCurrentColor(_par);
+        lr.endColor = p2.GetCurrentColor(_par);
     }
     //-----------------------------Highly Unsafe Area---------------------
     void init_cubelines(ParticleSystem.Particle[] particles) {
@@ -278,5 +280,46 @@ public class ColorCube : MonoBehaviour {
         }
     }
 
+    public void delete_me(bool quick = true) {
+        if (quick)
+        {
+            Destroy(gameObject);
+        }
+        else
+            StartCoroutine("vanishing");
+    }
+
+    IEnumerator vanishing() {
+        StopCoroutine("slightly_movement");
+        yield return new WaitForEndOfFrame();
+        int i, j, k, cnt;
+        //target positions
+        for (cnt = 0; cnt < vertice_cnt; cnt++) {
+            pos[cnt] += new Vector3(Random.value - 0.5f, Random.value - 0.5f, Random.value - 0.5f);
+        }
+        
+        for (cnt = 0; cnt < 90; cnt++)
+        {
+            int current_alive = _par.GetParticles(pars);
+            if (current_alive != vertice_cnt)
+            {
+                Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
+            }
+            for (i = 0; i < x; i++)
+                for (j = 0; j < y; j++)
+                    for (k = 0; k < z; k++)
+                    {
+                        float v = fly_to_dest(ref pars[indexed_xyz[i, j, k]],pos[indexed_xyz[i,j,k]]);
+                        Color _c = pars[indexed_xyz[i, j, k]].GetCurrentColor(_par);
+                        pars[indexed_xyz[i, j, k]].startColor = _c - DELTA_V * ( _c - new Color(1, 1, 1, 0) );
+
+                    }
+            _par.SetParticles(pars, vertice_cnt);
+            update_pos_cubelines();
+            yield return new WaitForEndOfFrame();
+        }
+
+        Destroy(gameObject);
+    }
 }
 
