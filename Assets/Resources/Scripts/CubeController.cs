@@ -22,6 +22,9 @@ public class CubeController : MonoBehaviour {
     Color color_temp0;
     Color color_temp1;
 
+    static int split_axis = 0;
+    static int[] init_bound = {0, 0, 0, 0, 0, 0};
+
     void Awake() {
         if (instance == null)
             instance = this;
@@ -58,12 +61,15 @@ public class CubeController : MonoBehaviour {
         
 	}
 
-    GameObject create_color_cube(int x, int y, int z, Vector3 center_position, Color c1, Color c2, bool quick = true) {
+    GameObject create_color_cube(int x, int y, int z, Vector3 center_position, Color c1, Color c2, bool quick = true, bool bound = false) {
         GameObject new_cube = Instantiate(default_system);
         new_cube.transform.position = center_position;
         ColorCube c = new_cube.AddComponent<ColorCube>();
         c.setColorCube(x, y, z, mat, c1, c2);
-        c.Init_my_cube(quick);
+        if(bound)
+            c.Init_my_cube(quick, init_bound[0], init_bound[1], init_bound[2], init_bound[3], init_bound[4], init_bound[5]);
+        else
+            c.Init_my_cube(quick);
         return new_cube;
     }
 
@@ -85,24 +91,30 @@ public class CubeController : MonoBehaviour {
                 color_temp1 = new Color(split_color, corner000.g, corner000.b);
                 cube_temp0 = create_color_cube(x / 2, y, z, pos0, corner000, color_temp0);
                 cube_temp1 = create_color_cube(x / 2, y, z, pos1, color_temp1, corner111);
+                split_axis = 0;
                 return true;
             case 1:
                 //y_axis
                 split_color = (corner000.g + corner111.g) * 0.5f;
                 Destroy(current_cube);
+                //vfx rotation
                 wave.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
                 wave.GetComponent<TestMask>().start_wave();
+
+                //new halves positions
                 pos0 = new Vector3(0, 0.25f * ColorCube.EDGE_LENGTH * y, 0);
                 pos1 = new Vector3(0, -0.25f * ColorCube.EDGE_LENGTH * y, 0);
                 color_temp0 = new Color(corner111.r, split_color, corner111.b);
                 color_temp1 = new Color(corner000.r, split_color, corner000.b);
                 cube_temp0 = create_color_cube(x, y / 2, z, pos0, corner000,color_temp0 );
                 cube_temp1 = create_color_cube(x, y / 2, z, pos1, color_temp1, corner111);
+                split_axis = 1;
                 return true;
             case 2:
                 //z_axis
                 split_color = (corner000.b + corner111.b) * 0.5f;
                 Destroy(current_cube);
+                //vfx rotation
                 wave.transform.localRotation = Quaternion.Euler(180f, 0f, 0f);
                 wave.GetComponent<TestMask>().start_wave();
                 pos0 = new Vector3(0, 0, 0.25f * ColorCube.EDGE_LENGTH * z);
@@ -111,6 +123,7 @@ public class CubeController : MonoBehaviour {
                 color_temp1 = new Color(corner000.r, corner000.g, split_color);
                 cube_temp0 = create_color_cube(x, y, z / 2, pos0, corner000,color_temp0);
                 cube_temp1 = create_color_cube(x, y, z / 2, pos1, color_temp1, corner111);
+                split_axis = 2;
                 return true;
             default:
                 Debug.LogError("Invalid input.");
@@ -123,7 +136,9 @@ public class CubeController : MonoBehaviour {
         if (ans == 0) {
             //set new corner color
             corner111 = color_temp0;
-            current_cube = create_color_cube(x, y, z, Vector3.zero, corner000, corner111);
+            //set init boundary
+            set_init_bound(split_axis, 0);
+            current_cube = create_color_cube(x, y, z, Vector3.zero, corner000, corner111, false, true);
             cube_temp0.GetComponent<ColorCube>().delete_me();
             cube_temp1.GetComponent<ColorCube>().delete_me(false);
             //set state
@@ -134,13 +149,86 @@ public class CubeController : MonoBehaviour {
         {
             //set new corner color
             corner000 = color_temp1;
-            current_cube = create_color_cube(x, y, z, Vector3.zero, corner000, corner111);
+            set_init_bound(split_axis, 1);
+            current_cube = create_color_cube(x, y, z, Vector3.zero, corner000, corner111,false, true);
             //set state
             cube_temp0.GetComponent<ColorCube>().delete_me(false);
             cube_temp1.GetComponent<ColorCube>().delete_me();
             st = cube_state.free;
             return;
         }
+    }
+
+    void set_init_bound(int axis_id, int choice) {
+        if (axis_id == 0) {
+            if (choice == 0)
+            {
+                init_bound[0] = 4;
+                init_bound[1] = 8;
+                init_bound[2] = 0;
+                init_bound[3] = 8;
+                init_bound[4] = 0;
+                init_bound[5] = 8;
+                return;
+            }
+            if (choice == 1)
+            {
+                init_bound[0] = 0;
+                init_bound[1] = 4;
+                init_bound[2] = 0;
+                init_bound[3] = 8;
+                init_bound[4] = 0;
+                init_bound[5] = 8;
+                return;
+            }
+        }
+        if (axis_id == 1)
+        {
+            if (choice == 0)
+            {
+                init_bound[0] = 0;
+                init_bound[1] = 8;
+                init_bound[2] = 4;
+                init_bound[3] = 8;
+                init_bound[4] = 0;
+                init_bound[5] = 8;
+                return;
+            }
+            if (choice == 1)
+            {
+                init_bound[0] = 0;
+                init_bound[1] = 8;
+                init_bound[2] = 0;
+                init_bound[3] = 4;
+                init_bound[4] = 0;
+                init_bound[5] = 8;
+                return;
+            }
+        }
+        if (axis_id == 2)
+        {
+            if (choice == 0)
+            {
+                init_bound[0] = 0;
+                init_bound[1] = 8;
+                init_bound[2] = 0;
+                init_bound[3] = 8;
+                init_bound[4] = 4;
+                init_bound[5] = 8;
+                return;
+            }
+            if (choice == 1)
+            {
+                init_bound[0] = 0;
+                init_bound[1] = 8;
+                init_bound[2] = 0;
+                init_bound[3] = 8;
+                init_bound[4] = 0;
+                init_bound[5] = 4;
+                return;
+            }
+        }
+        Debug.LogError("Set bound error.");
     }
 
 }

@@ -49,7 +49,8 @@ public class ColorCube : MonoBehaviour {
         this.color_one = _color_one;
     }
 
-    public void Init_my_cube(bool quick_instance = false){
+    public void Init_my_cube(bool quick_instance = false, int x_min = 0, int x_max = 0, int y_min = 0, int y_max = 0, int z_min = 0, int z_max = 0)
+    {
         _par = GetComponent<ParticleSystem>();
         indexing();
         init_pos();
@@ -58,7 +59,7 @@ public class ColorCube : MonoBehaviour {
 
         //emit particles, and set it on the correct position
         _par.Emit(vertice_cnt);
-        particle_init();
+        particle_init(x_min, x_max, y_min, y_max, z_min, z_max);
         IEnumerator c = init_colorcube(quick_instance);
         StartCoroutine(c);
     }
@@ -90,27 +91,34 @@ public class ColorCube : MonoBehaviour {
                     float inter_g = (j * color_zero.g + (y - j) * color_one.g) / y;
                     float inter_b = (k * color_zero.b + (z - k) * color_one.b) / z;
                     color[indexed_xyz[i, j, k]] = new Color (inter_r, inter_g, inter_b);
-
                 }
 
         }
 
-        //index particles to their x,y,z
-        void particle_init(){
-        int i;
+    //index particles to their x,y,z
+    void particle_init(int x_min = 0, int x_max = 0, int y_min = 0, int y_max = 0, int z_min = 0, int z_max = 0 ){
+        int i,j,k;
         pars = new ParticleSystem.Particle[vertice_cnt];
         int current_alive = _par.GetParticles(pars);
         if (current_alive != vertice_cnt) {
             Debug.LogError(current_alive+"Particle number does not match vertices number, check initialization order.");
             return;
         }
-      
-        for (i = 0; i < vertice_cnt; i++){
-                pars[i].startLifetime = Mathf.Infinity;
-                pars[i].position = Vector3.zero;
-                pars[i].velocity = Vector3.zero;
-                pars[i].startColor = color[i];
-            }
+
+        for (i = 0; i < x; i++)
+            for (j = 0; j < y; j++)
+                for (k = 0; k < z; k++)
+                {
+                    pars[indexed_xyz[i, j, k]].startLifetime = Mathf.Infinity;
+                    pars[indexed_xyz[i, j, k]].velocity = Vector3.zero;
+                    pars[indexed_xyz[i, j, k]].startColor = color[indexed_xyz[i, j, k]];
+                    if (i < x_max && i >= x_min && j < y_max && j >= y_min && k < z_max && k >= z_min)
+                        pars[indexed_xyz[i, j, k]].position = pos[indexed_xyz[i, j, k]];
+                    else
+                        pars[indexed_xyz[i, j, k]].position = Vector3.zero;
+
+                }
+
         _par.SetParticles(pars, vertice_cnt);
         Debug.Log("Initialization succeeded.");
         
@@ -312,13 +320,12 @@ public class ColorCube : MonoBehaviour {
                         float v = fly_to_dest(ref pars[indexed_xyz[i, j, k]],pos[indexed_xyz[i,j,k]]);
                         Color _c = pars[indexed_xyz[i, j, k]].GetCurrentColor(_par);
                         pars[indexed_xyz[i, j, k]].startColor = _c - DELTA_V * ( _c - new Color(1, 1, 1, 0) );
-
+                        pars[indexed_xyz[i, j, k]].startSize -= 0.002f; 
                     }
             _par.SetParticles(pars, vertice_cnt);
             update_pos_cubelines();
             yield return new WaitForEndOfFrame();
         }
-
         Destroy(gameObject);
     }
 }
