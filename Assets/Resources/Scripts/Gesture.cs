@@ -5,17 +5,15 @@ using UnityEngine;
 public class Gesture : MonoBehaviour {
 
     public Hand left, right;
-    public float speed_threshold;
-    public int sum_speed;
+    public GameObject wave;
+    public float ratio;
 
-    Vector3 pos, delta;
-    bool status;
-    bool waiting;
-    int s;
+    bool status, waiting;
+
+    int dir;
+    float dis;
 
     void Awake() {
-        pos = transform.position;
-        s = 0;
         status = false;
         waiting = false;
     }
@@ -29,8 +27,6 @@ public class Gesture : MonoBehaviour {
         update_status();
         if (waiting) {
             update_select();
-        } else {
-            update_gesture();
         }
 	}
 
@@ -42,53 +38,46 @@ public class Gesture : MonoBehaviour {
         bool new_status = get_trigger();
 
         if (status && !new_status) {
-
-            s = 0;
-        } else if (!status && new_status) {
-
+            split();
+        }
+        if (new_status) {
+            set_wave();
         }
         status = new_status;
     }
 
-    void update_gesture() {
-        if (!status) {
-            pos = transform.position;
-            return;
+    void set_wave() {
+        set_info();
+        if (dir == 0) {
+            wave.transform.rotation = Quaternion.Euler(0, 90, 0);
+        } else if (dir == 1) {
+            wave.transform.rotation = Quaternion.Euler(90, 0, 0);
+        } else {
+            wave.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
 
-        if (left.velocity.magnitude < speed_threshold || right.velocity.magnitude < speed_threshold) {
-            s = 0;
-            return;
-        }
+        wave.transform.localScale = new Vector3(dis * ratio, dis * ratio, 1);
+    }
 
-        s += 1;
-        if (s == 1) {
-            delta = right.pos - left.pos;
-        }
-        if (s == sum_speed) {
-            Vector3 tmp = right.pos - left.pos - delta;
-            if (tmp.x < 0) {
-                tmp.x *= -1;
-            }
-            if (tmp.y < 0) {
-                tmp.y *= -1;
-            }
-            if (tmp.z < 0) {
-                tmp.z *= -1;
-            }
+    void set_info() {
+        Vector3 tmp = right.pos - left.pos;
+        if (tmp.x < 0) tmp.x *= -1;
+        if (tmp.y < 0) tmp.y *= -1;
+        if (tmp.z < 0) tmp.z *= -1;
 
-            if (tmp.x >= tmp.z && tmp.y >= tmp.z) {
-                // cut z
-            } else if (tmp.x >= tmp.y && tmp.z >= tmp.y) {
-                // cut y
-            } else {
-                // cut x
-            }
+        if (tmp.x > tmp.z && tmp.y > tmp.z) dir = 2;
+        if (tmp.x > tmp.y && tmp.z > tmp.y) dir = 1;
+        if (tmp.y > tmp.x && tmp.z > tmp.x) dir = 0;
 
-            s = 0;
-            waiting = true;
-        }
-        pos = transform.position;
+        if (tmp.x > tmp.y && tmp.x > tmp.z) dis = tmp.x;
+        if (tmp.y > tmp.x && tmp.y > tmp.z) dis = tmp.y;
+        if (tmp.z > tmp.y && tmp.z > tmp.x) dis = tmp.z;
+    }
+
+    void split() {
+        // call split
+        set_info();
+        Debug.Log("split" + dir);
     }
 
     void update_select() {
