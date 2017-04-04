@@ -36,7 +36,7 @@ public class CubeController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        current_cube = create_color_cube(x, y, z, Vector3.zero, corner000, corner111,false);
+        current_cube = create_color_cube(x, y, z, Vector3.zero, corner000, corner111, false);
 	}
 
     // Update is called once per frame

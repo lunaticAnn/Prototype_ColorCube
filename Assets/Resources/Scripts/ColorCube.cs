@@ -138,51 +138,44 @@ public class ColorCube : MonoBehaviour {
 	IEnumerator init_colorcube(bool quick_instance = false) {
 		int i, j, k;
 		float max_v = -1f;
-		//without animation
-		if (quick_instance)
-		{
-			int current_alive = _par.GetParticles(pars);
-			if (current_alive != vertice_cnt)
-			{
-				Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
-			}
-			// put all particles onto traget position
-			for (i = 0; i < x; i++)
-				for (j = 0; j < y; j++)
-					for (k = 0; k < z; k++) {
-						pars[indexed_xyz[i, j, k]].position = pos[indexed_xyz[i, j, k]];
-					}
-			//init cube lines
-			_par.SetParticles(pars, vertice_cnt);
-			init_cubelines(pars);
-			yield return new WaitForEndOfFrame();
-		}
-		//with animation
-		else
-			do
-			{
-				max_v = -1f;
-				int current_alive = _par.GetParticles(pars);
-				if (current_alive != vertice_cnt)
-				{
-					Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
-				}
-				for (i = 0; i < x; i++)
-					for (j = 0; j < y; j++)
-						for (k = 0; k < z; k++)
-						{
-							float v = fly_to_dest(ref pars[indexed_xyz[i, j, k]], pos[indexed_xyz[i, j, k]]);
-							max_v = Mathf.Max(v, max_v);
-						}
-				_par.SetParticles(pars, vertice_cnt);
+        //without animation
+        if (quick_instance) {
+            int current_alive = _par.GetParticles(pars);
+            if (current_alive != vertice_cnt) {
+                Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
+            }
+            // put all particles onto traget position
+            for (i = 0; i < x; i++)
+                for (j = 0; j < y; j++)
+                    for (k = 0; k < z; k++) {
+                        pars[indexed_xyz[i, j, k]].position = pos[indexed_xyz[i, j, k]];
+                    }
+            //init cube lines
+            _par.SetParticles(pars, vertice_cnt);
+            init_cubelines(pars);
+            yield return new WaitForEndOfFrame();
+        }
+        //with animation
+        else {
 
-				if (lines.Count == 0)
-					init_cubelines(pars);
-				else
-					update_pos_cubelines();
-				yield return new WaitForEndOfFrame();
+            int current_alive = _par.GetParticles(pars);
+            if (current_alive != vertice_cnt) {
+                Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
+            }
+            for (i = 0; i < x; i++)
+                for (j = 0; j < y; j++)
+                    for (k = 0; k < z; k++) {
+                        pars[indexed_xyz[i, j, k]].position = 0.8f * (pos[indexed_xyz[i, j, k]] - pars[indexed_xyz[i, j, k]].position);
+                    }
+            _par.SetParticles(pars, vertice_cnt);
 
-			} while (max_v > 1e-3);
+            if (lines.Count == 0)
+                init_cubelines(pars);
+            else
+                update_pos_cubelines();
+            yield return new WaitForEndOfFrame();
+        }
+			
 
 		Debug.Log("Initialize finished.");
 
@@ -251,7 +244,7 @@ public class ColorCube : MonoBehaviour {
 	}
 
 	const float K_HOOK = 0.8f;
-	const float K_DAMP = 0.7f;
+	const float K_DAMP = 0.2f;
 		
 
 	
