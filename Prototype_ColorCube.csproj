@@ -134,7 +134,10 @@
     <Compile Include="Assets\OvrAvatar\Scripts\OvrAvatarTouchController.cs" />
     <Compile Include="Assets\Resources\Scripts\ColorCube.cs" />
     <Compile Include="Assets\Resources\Scripts\CubeController.cs" />
+    <Compile Include="Assets\Resources\Scripts\Gesture.cs" />
+    <Compile Include="Assets\Resources\Scripts\Hand.cs" />
     <Compile Include="Assets\Resources\Scripts\TestMask.cs" />
+    <Compile Include="Assets\Resources\Scripts\int3.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />

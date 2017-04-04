@@ -51,7 +51,8 @@ public class CubeController : MonoBehaviour {
                     split_cube(2);
                 return;
             case cube_state.wait_choose:
-                if (OVRInput.GetDown(OVRInput.Button.One)) {
+                if (OVRInput.GetDown(OVRInput.Button.One))
+                {
                     float dis0 = Vector3.Distance(cube_temp0.transform.position, righthand.position);
                     float dis1 = Vector3.Distance(cube_temp1.transform.position, righthand.position);
                     if (dis0 - dis1 < 0f)
@@ -59,7 +60,14 @@ public class CubeController : MonoBehaviour {
                     else
                         choose(1);
                 }
-                    
+                else if (Input.GetKeyDown(KeyCode.Z)) {
+                    choose(0);
+                }
+                else if (Input.GetKeyDown(KeyCode.X))
+                {
+                    choose(1);
+                }
+
                 return;
 
             default: return;
