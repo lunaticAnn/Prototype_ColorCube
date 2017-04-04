@@ -17,6 +17,7 @@ public class CubeController : MonoBehaviour {
     //color pallate when x,y,z = 1;
     public Color corner111;
 
+    bool test = false;
     GameObject current_cube;
     GameObject cube_temp0;
     GameObject cube_temp1;
@@ -43,11 +44,12 @@ public class CubeController : MonoBehaviour {
     void Update() {
         switch (st) {
             case cube_state.free:
-                if (OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger)||Input.GetKeyDown(KeyCode.A))
+                
+                if ( (test && OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger))||Input.GetKeyDown(KeyCode.A))
                     split_cube(0);
-                else if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) ||Input.GetKeyDown(KeyCode.S))
+                else if ((test && OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger)) ||Input.GetKeyDown(KeyCode.S))
                     split_cube(1);
-                else if (OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger)|| Input.GetKeyDown(KeyCode.D))
+                else if ((test && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))|| Input.GetKeyDown(KeyCode.D))
                     split_cube(2);
                 return;
             case cube_state.wait_choose:
@@ -87,7 +89,7 @@ public class CubeController : MonoBehaviour {
         return new_cube;
     }
 
-    bool split_cube(int axis = 0) {
+    public bool split_cube(int axis = 0) {
         int a = axis % 3;
         float split_color;
         Vector3 pos0, pos1;
@@ -97,8 +99,7 @@ public class CubeController : MonoBehaviour {
                 //x_axis
                 split_color = (corner000.r + corner111.r) * 0.5f;
                 Destroy(current_cube);
-                wave.transform.localRotation = Quaternion.Euler(0f, 90f, 90f);
-                wave.GetComponent<TestMask>().start_wave();
+   
                 pos0 =new  Vector3(0.25f * ColorCube.EDGE_LENGTH * x , 0, 0);
                 pos1 = new Vector3(-0.25f * ColorCube.EDGE_LENGTH *x , 0, 0);
                 color_temp0 = new Color(split_color, corner111.g, corner111.b);
@@ -111,9 +112,7 @@ public class CubeController : MonoBehaviour {
                 //y_axis
                 split_color = (corner000.g + corner111.g) * 0.5f;
                 Destroy(current_cube);
-                //vfx rotation
-                wave.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
-                wave.GetComponent<TestMask>().start_wave();
+          
 
                 //new halves positions
                 pos0 = new Vector3(0, 0.25f * ColorCube.EDGE_LENGTH * y, 0);
@@ -128,9 +127,7 @@ public class CubeController : MonoBehaviour {
                 //z_axis
                 split_color = (corner000.b + corner111.b) * 0.5f;
                 Destroy(current_cube);
-                //vfx rotation
-                wave.transform.localRotation = Quaternion.Euler(180f, 0f, 0f);
-                wave.GetComponent<TestMask>().start_wave();
+              
                 pos0 = new Vector3(0, 0, 0.25f * ColorCube.EDGE_LENGTH * z);
                 pos1 = new Vector3(0, 0, -0.25f * ColorCube.EDGE_LENGTH * z);
                 color_temp0 = new Color(corner111.r, corner111.g, split_color);

@@ -5,8 +5,11 @@ using UnityEngine;
 public class Hand : MonoBehaviour {
 
     public Vector3 pos, velocity;
-    Vector3 tmp;
+    Vector3 tmp = Vector3.zero;
 
+    private void Awake() {
+        pos = transform.position; 
+    }
 	// Use this for initialization
 	void Start () {
 		

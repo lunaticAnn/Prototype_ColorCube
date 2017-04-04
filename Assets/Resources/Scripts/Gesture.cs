@@ -7,6 +7,7 @@ public class Gesture : MonoBehaviour {
     public Hand left, right;
     public GameObject wave;
     public float ratio;
+    public float grow_time;
 
     bool status, waiting;
 
@@ -24,9 +25,10 @@ public class Gesture : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        update_status();
         if (waiting) {
             update_select();
+        } else {
+            update_status();
         }
 	}
 
@@ -77,18 +79,33 @@ public class Gesture : MonoBehaviour {
     void split() {
         // call split
         set_info();
-        Debug.Log("split" + dir);
+        CubeController.instance.split_cube(dir);
+        StartCoroutine(coGrow());
+        waiting = true;
     }
 
     void update_select() {
-        if (OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger)) {
+        if (OVRInput.GetDown(OVRInput.Button.One)) {
             waiting = false;
             // right.gameObject.transform.position
         }
-        if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
+        if (OVRInput.GetDown(OVRInput.Button.Three))
         {
             waiting = false;
             // left.gameObject.transform.position
         }
+    }
+
+    IEnumerator coGrow() {
+        float now = wave.transform.localScale.x;
+        float target = 500 - now;
+
+        for (float res = grow_time; res > 0; res -= 0.025f) {
+            float r = (1 - res / grow_time) * target + now;
+            wave.transform.localScale = new Vector3(r, r, 1);
+            yield return new WaitForSeconds(0.025f);
+        }
+
+        wave.transform.localScale = new Vector3(0, 0, 1);
     }
 }

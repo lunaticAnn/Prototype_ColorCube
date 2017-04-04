@@ -165,7 +165,8 @@ public class ColorCube : MonoBehaviour {
             for (i = 0; i < x; i++)
                 for (j = 0; j < y; j++)
                     for (k = 0; k < z; k++) {
-                        pars[indexed_xyz[i, j, k]].position = 0.8f * (pos[indexed_xyz[i, j, k]] - pars[indexed_xyz[i, j, k]].position);
+                            pars[indexed_xyz[i, j, k]].position += 0.8f * (pos[indexed_xyz[i, j, k]] - pars[indexed_xyz[i, j, k]].position);
+                      
                     }
             _par.SetParticles(pars, vertice_cnt);
 
@@ -234,7 +235,7 @@ public class ColorCube : MonoBehaviour {
 				for (j = 0; j < y; j++)
 					for (k = 0; k < z; k++)
 					{
-						pars[indexed_xyz[i, j, k]].velocity += 0.05f * force[indexed_xyz[i, j, k]];
+                            pars[indexed_xyz[i, j, k]].velocity += 0.05f * force[indexed_xyz[i, j, k]];
 					}
 			_par.SetParticles(pars, vertice_cnt);
 			update_pos_cubelines();
@@ -243,7 +244,7 @@ public class ColorCube : MonoBehaviour {
 		
 	}
 
-	const float K_HOOK = 0.8f;
+	const float K_HOOK = 0.3f;
 	const float K_DAMP = 0.2f;
 		
 
