@@ -8,8 +8,8 @@ public class ColorCube : MonoBehaviour {
 	const float DELTA_V = 0.05f;
 	const float LINE_WIDTH = 0.05f;
 	const float BREATH = 0.0003f;
-	const float K_HOOK = 0.5f;
-	const float K_DAMP = 0.2f;
+	const float K_HOOK = 0.8f;
+	const float K_DAMP = 0.8f;
 
 	public int x, y, z;
 	public Material mat;
@@ -52,6 +52,7 @@ public class ColorCube : MonoBehaviour {
 		this.mat = _mat;
 		this.color_zero = _color_zero;
 		this.color_one = _color_one;
+        f_field = CubeController.instance.force_field;
 	}
 
 	public void Init_my_cube(bool quick_instance = false, int x_min = 0, int x_max = 0, int y_min = 0, int y_max = 0, int z_min = 0, int z_max = 0)
@@ -159,7 +160,7 @@ public class ColorCube : MonoBehaviour {
             for (i = 0; i < x; i++)
                 for (j = 0; j < y; j++)
                     for (k = 0; k < z; k++) {
-                        pars[indexed_xyz[i, j, k]].position = 1.1f * pos[indexed_xyz[i, j, k]];
+                        pars[indexed_xyz[i, j, k]].position =  pos[indexed_xyz[i, j, k]];
                     }
             //init cube lines
             _par.SetParticles(pars, vertice_cnt);
@@ -214,17 +215,12 @@ public class ColorCube : MonoBehaviour {
 			yield return new WaitForEndOfFrame();
 		}
 	}
-    public float test_movement;
+
 	//++++++++++++++++++++++++++++++ spring mass system +++++++++++++++++++++++++++++++++++++++
 	IEnumerator realistic_movement() {	
 		int i, j, k;
-        f_field = new ForceField(ForceField.forcetype.sphere, 0f , 3 * Vector3.one, test_movement * Vector3.forward);
 		while (true)
 		{
-            if (Input.GetKey(KeyCode.F)) {
-                f_field.set_strength(1f);
-                Debug.Log("Force"); 
-            }
             int current_alive = _par.GetParticles(pars);
 			if (current_alive != vertice_cnt)
 			{
@@ -234,16 +230,16 @@ public class ColorCube : MonoBehaviour {
 				for (j = 0; j < y ; j++)
 					for (k = 0; k < z ; k++){
                         if (((i != 0 )&& (i != x - 1))|| ((j != 0) && (j != y - 1))|| ((k != 0) && (k != z - 1)))
-                            force[indexed_xyz[i, j, k]] = accum_force(i, j, k, f_field.sample_force(pos[indexed_xyz[i, j, k]]));                                                          
+                            force[indexed_xyz[i, j, k]] = accum_force(i, j, k, f_field.sample_force(pars[indexed_xyz[i, j, k]].position + transform.position));                                                          
                     }
-            f_field.set_strength(0f);
+            
             for (i = 0; i < x; i++)
 				for (j = 0; j < y; j++)
 					for (k = 0; k < z; k++){
                         if (((i != 0) && (i != x - 1)) || ((j != 0) && (j != y - 1)) || ((k != 0) && (k != z - 1)))
-                            pars[indexed_xyz[i, j, k]].velocity += 0.05f * force[indexed_xyz[i, j, k]];
+                            pars[indexed_xyz[i, j, k]].velocity += 0.1f * force[indexed_xyz[i, j, k]];
                         else
-                            pars[indexed_xyz[i, j, k]].position  = pos[indexed_xyz[i, j, k]];
+                            pars[indexed_xyz[i, j, k]].position  +=DELTA_V *( pos[indexed_xyz[i, j, k]] - pars[indexed_xyz[i, j, k]].position);
 
                     }
 			_par.SetParticles(pars, vertice_cnt);
@@ -320,6 +316,7 @@ public class ColorCube : MonoBehaviour {
         lr.startColor = p1.GetCurrentColor(_par);
         lr.endColor = p2.GetCurrentColor(_par);
     }
+
     //-----------------------------Highly Unsafe Area---------------------
     void init_cubelines(ParticleSystem.Particle[] particles) {
         int i, j, k;

@@ -47,10 +47,15 @@ public class ForceField  {
         s = _s;
     }
 
-    public void set_center(Vector3 _c)
-    {
+    public void set_center(Vector3 _c){
         c = _c;
     }
+
+    //set radius argument of this force field
+    public void set_radius(Vector3 radius) {
+        r = radius;
+    }
+
 
     Vector3 sphere_force(Vector3 p) {
         //bilinear interpolation from center to surface

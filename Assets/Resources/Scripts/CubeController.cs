@@ -16,6 +16,7 @@ public class CubeController : MonoBehaviour {
     public Color corner000;
     //color pallate when x,y,z = 1;
     public Color corner111;
+    public ForceField force_field;
 
     bool test = true;
     GameObject current_cube;
@@ -32,7 +33,9 @@ public class CubeController : MonoBehaviour {
             instance = this;
         else
             Destroy(gameObject);
-        
+
+        //initialize force field
+        force_field = new ForceField(ForceField.forcetype.sphere, 0f, Vector3.one);       
     }
 
 	// Use this for initialization
@@ -94,25 +97,27 @@ public class CubeController : MonoBehaviour {
         float split_color;
         Vector3 pos0, pos1;
         st = cube_state.wait_choose;
+
         switch (a) {
             case 0:
                 //x_axis
+                split_axis = 0;
+                StartCoroutine("changing_force");
                 split_color = (corner000.r + corner111.r) * 0.5f;
-                Destroy(current_cube);
-   
+                Destroy(current_cube);  
                 pos0 =new  Vector3(0.25f * ColorCube.EDGE_LENGTH * x , 0, 0);
                 pos1 = new Vector3(-0.25f * ColorCube.EDGE_LENGTH *x , 0, 0);
                 color_temp0 = new Color(split_color, corner111.g, corner111.b);
                 color_temp1 = new Color(split_color, corner000.g, corner000.b);
                 cube_temp0 = create_color_cube(x / 2, y, z, pos0, corner000, color_temp0);
-                cube_temp1 = create_color_cube(x / 2, y, z, pos1, color_temp1, corner111);
-                split_axis = 0;
+                cube_temp1 = create_color_cube(x / 2, y, z, pos1, color_temp1, corner111);            
                 return true;
             case 1:
                 //y_axis
+                split_axis = 1;
+                StartCoroutine("changing_force");
                 split_color = (corner000.g + corner111.g) * 0.5f;
                 Destroy(current_cube);
-
                 //new halves positions
                 pos0 = new Vector3(0, 0.25f * ColorCube.EDGE_LENGTH * y, 0);
                 pos1 = new Vector3(0, -0.25f * ColorCube.EDGE_LENGTH * y, 0);
@@ -120,10 +125,12 @@ public class CubeController : MonoBehaviour {
                 color_temp1 = new Color(corner000.r, split_color, corner000.b);
                 cube_temp0 = create_color_cube(x, y / 2, z, pos0, corner000,color_temp0 );
                 cube_temp1 = create_color_cube(x, y / 2, z, pos1, color_temp1, corner111);
-                split_axis = 1;
+                
                 return true;
             case 2:
+                split_axis = 2;
                 //z_axis
+                StartCoroutine("changing_force");
                 split_color = (corner000.b + corner111.b) * 0.5f;
                 Destroy(current_cube);
               
@@ -133,13 +140,27 @@ public class CubeController : MonoBehaviour {
                 color_temp1 = new Color(corner000.r, corner000.g, split_color);
                 cube_temp0 = create_color_cube(x, y, z / 2, pos0, corner000,color_temp0);
                 cube_temp1 = create_color_cube(x, y, z / 2, pos1, color_temp1, corner111);
-                split_axis = 2;
+                
                 return true;
             default:
                 Debug.LogError("Invalid input.");
                 return false;
         }       
     }
+
+    IEnumerator changing_force() {      
+        int i = 0;
+        force_field.set_radius(new Vector3(2f, 2f, 2f));           
+        while (i < 6) {
+            force_field.set_strength(20f);
+            i++;
+            yield return new WaitForEndOfFrame();
+        }
+        force_field.set_strength(0f);
+        yield return new WaitForEndOfFrame();
+    }
+
+
 
     void choose(int i) {
         int ans = i % 2;
