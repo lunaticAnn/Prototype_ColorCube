@@ -7,7 +7,7 @@
 		LOD 200
 		Pass{
 		ZWrite On
-		ColorMask RG
+		ColorMask GB
 		}
 		
 	}

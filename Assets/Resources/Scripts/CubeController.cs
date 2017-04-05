@@ -18,7 +18,7 @@ public class CubeController : MonoBehaviour {
     public Color corner111;
     public ForceField force_field;
 
-    bool test = true;
+    bool test = false;
     GameObject current_cube;
     GameObject cube_temp0;
     GameObject cube_temp1;
@@ -48,11 +48,11 @@ public class CubeController : MonoBehaviour {
         switch (st) {
             case cube_state.free:
                 
-                if ( (test && OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger))||Input.GetKeyDown(KeyCode.A))
+                if (Input.GetKeyDown(KeyCode.A))
                     split_cube(0);
-                else if ((test && OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger)) ||Input.GetKeyDown(KeyCode.S))
+                else if (Input.GetKeyDown(KeyCode.S))
                     split_cube(1);
-                else if ((test && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))|| Input.GetKeyDown(KeyCode.D))
+                else if ( Input.GetKeyDown(KeyCode.D))
                     split_cube(2);
                 return;
             case cube_state.wait_choose:
