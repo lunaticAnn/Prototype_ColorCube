@@ -27,6 +27,8 @@ public class ColorCube : MonoBehaviour {
 	Vector3[] pos;
 	Color[] color;
 	Vector3[] force;
+    ForceField f_field;
+
 	struct line_se
 	{
 		public int start_index, end_index;
@@ -212,14 +214,18 @@ public class ColorCube : MonoBehaviour {
 			yield return new WaitForEndOfFrame();
 		}
 	}
-
+    public float test_movement;
 	//++++++++++++++++++++++++++++++ spring mass system +++++++++++++++++++++++++++++++++++++++
-	IEnumerator realistic_movement() {
-		
+	IEnumerator realistic_movement() {	
 		int i, j, k;
+        f_field = new ForceField(ForceField.forcetype.sphere, 0f , 3 * Vector3.one, test_movement * Vector3.forward);
 		while (true)
 		{
-			int current_alive = _par.GetParticles(pars);
+            if (Input.GetKey(KeyCode.F)) {
+                f_field.set_strength(1f);
+                Debug.Log("Force"); 
+            }
+            int current_alive = _par.GetParticles(pars);
 			if (current_alive != vertice_cnt)
 			{
 				Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
@@ -227,13 +233,19 @@ public class ColorCube : MonoBehaviour {
 			for (i = 0; i < x ; i++)
 				for (j = 0; j < y ; j++)
 					for (k = 0; k < z ; k++){
-						force[indexed_xyz[i, j, k]] = accum_force(i, j, k);
+                        if (((i != 0 )&& (i != x - 1))|| ((j != 0) && (j != y - 1))|| ((k != 0) && (k != z - 1)))
+                            force[indexed_xyz[i, j, k]] = accum_force(i, j, k, f_field.sample_force(pos[indexed_xyz[i, j, k]]));                                                          
                     }
-			for (i = 0; i < x; i++)
+            f_field.set_strength(0f);
+            for (i = 0; i < x; i++)
 				for (j = 0; j < y; j++)
 					for (k = 0; k < z; k++){
+                        if (((i != 0) && (i != x - 1)) || ((j != 0) && (j != y - 1)) || ((k != 0) && (k != z - 1)))
                             pars[indexed_xyz[i, j, k]].velocity += 0.05f * force[indexed_xyz[i, j, k]];
-					}
+                        else
+                            pars[indexed_xyz[i, j, k]].position  = pos[indexed_xyz[i, j, k]];
+
+                    }
 			_par.SetParticles(pars, vertice_cnt);
 			update_pos_cubelines();
 			yield return new WaitForEndOfFrame();
