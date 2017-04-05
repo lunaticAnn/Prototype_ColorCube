@@ -8,6 +8,8 @@ public class ColorCube : MonoBehaviour {
 	const float DELTA_V = 0.05f;
 	const float LINE_WIDTH = 0.05f;
 	const float BREATH = 0.0003f;
+	const float K_HOOK = 0.5f;
+	const float K_DAMP = 0.2f;
 
 	public int x, y, z;
 	public Material mat;
@@ -115,13 +117,21 @@ public class ColorCube : MonoBehaviour {
 					pars[indexed_xyz[i, j, k]].startLifetime = Mathf.Infinity;
 					pars[indexed_xyz[i, j, k]].velocity = Vector3.zero;
 					pars[indexed_xyz[i, j, k]].startColor = color[indexed_xyz[i, j, k]];
+					float x_ratio = 1f * (x_max - x_min) / x;
+					float y_ratio = 1f * (y_max - y_min) / y;
+					float z_ratio = 1f * (z_max - z_min) / z;
+					pars[indexed_xyz[i, j, k]].position =new Vector3 (pos[indexed_xyz[i, j, k]].x * x_ratio,
+																	pos[indexed_xyz[i, j, k]].y * y_ratio,
+																	pos[indexed_xyz[i, j, k]].z * z_ratio);
+					/*
 					if (i < x_max && i >= x_min && j < y_max && j >= y_min && k < z_max && k >= z_min)
 						pars[indexed_xyz[i, j, k]].position = pos[indexed_xyz[i, j, k]];
 					else
-						pars[indexed_xyz[i, j, k]].position = Vector3.zero;
+						pars[indexed_xyz[i, j, k]].position = Vector3.zero;*/
+
 					force[indexed_xyz[i, j, k]] = Vector3.zero;
 				}
-
+ 
 		_par.SetParticles(pars, vertice_cnt);
 		Debug.Log("Initialization succeeded.");
 
@@ -137,7 +147,6 @@ public class ColorCube : MonoBehaviour {
 
 	IEnumerator init_colorcube(bool quick_instance = false) {
 		int i, j, k;
-		float max_v = -1f;
         //without animation
         if (quick_instance) {
             int current_alive = _par.GetParticles(pars);
@@ -148,7 +157,7 @@ public class ColorCube : MonoBehaviour {
             for (i = 0; i < x; i++)
                 for (j = 0; j < y; j++)
                     for (k = 0; k < z; k++) {
-                        pars[indexed_xyz[i, j, k]].position = pos[indexed_xyz[i, j, k]];
+                        pars[indexed_xyz[i, j, k]].position = 1.1f * pos[indexed_xyz[i, j, k]];
                     }
             //init cube lines
             _par.SetParticles(pars, vertice_cnt);
@@ -165,10 +174,10 @@ public class ColorCube : MonoBehaviour {
             for (i = 0; i < x; i++)
                 for (j = 0; j < y; j++)
                     for (k = 0; k < z; k++) {
-                            pars[indexed_xyz[i, j, k]].position += 0.8f * (pos[indexed_xyz[i, j, k]] - pars[indexed_xyz[i, j, k]].position);
-                      
-                    }
-            _par.SetParticles(pars, vertice_cnt);
+						//pars[indexed_xyz[i, j, k]].position =   pos[indexed_xyz[i, j, k]] ;
+						pars[indexed_xyz[i, j, k]].position += 0.1f * (pos[indexed_xyz[i, j, k]] - pars[indexed_xyz[i, j, k]].position);
+					}
+			_par.SetParticles(pars, vertice_cnt);
 
             if (lines.Count == 0)
                 init_cubelines(pars);
@@ -208,33 +217,21 @@ public class ColorCube : MonoBehaviour {
 	IEnumerator realistic_movement() {
 		
 		int i, j, k;
-		int set_force = 10;
 		while (true)
 		{
-			Debug.Log("Cauculating..");
 			int current_alive = _par.GetParticles(pars);
 			if (current_alive != vertice_cnt)
 			{
 				Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
 			}
-			for (i = 0; i < x; i++)
-				for (j = 0; j < y; j++)
-					for (k = 0; k < z; k++)
-					{
-                        if (i < 2 && j <3  && k <2 && set_force > 0)
-						{
-							force[indexed_xyz[i, j, k]] = accum_force(i, j, k, 1.5f * Vector3.one);
-							set_force --;
-						}
-						else {
-							force[indexed_xyz[i, j, k]] = accum_force(i, j, k);
-						}
-                        //force[indexed_xyz[i, j, k]] = accum_force(i, j, k, Vector3.zero);
+			for (i = 0; i < x ; i++)
+				for (j = 0; j < y ; j++)
+					for (k = 0; k < z ; k++){
+						force[indexed_xyz[i, j, k]] = accum_force(i, j, k);
                     }
 			for (i = 0; i < x; i++)
 				for (j = 0; j < y; j++)
-					for (k = 0; k < z; k++)
-					{
+					for (k = 0; k < z; k++){
                             pars[indexed_xyz[i, j, k]].velocity += 0.05f * force[indexed_xyz[i, j, k]];
 					}
 			_par.SetParticles(pars, vertice_cnt);
@@ -244,11 +241,6 @@ public class ColorCube : MonoBehaviour {
 		
 	}
 
-	const float K_HOOK = 0.3f;
-	const float K_DAMP = 0.2f;
-		
-
-	
 	Vector3 accum_force(int _i, int _j, int _k, Vector3 external_force = default(Vector3)) {
 		// calculate the accumulative force for particle at (x,y,z) of the system
 		// checking neighbour index is within the boundary
@@ -263,6 +255,7 @@ public class ColorCube : MonoBehaviour {
 		for (cnt = 0; cnt < 12; cnt++){
 			af += get_force(_i, _j, _k, int3.shear[cnt], len2);
 		}
+		
 		for (cnt = 0; cnt < 6; cnt++){
 			af += get_force(_i, _j, _k, int3.bend[cnt], 2 * EDGE_LENGTH);
 		}
@@ -282,9 +275,9 @@ public class ColorCube : MonoBehaviour {
 	
 	Vector3 spring_force(ParticleSystem.Particle me,ParticleSystem.Particle nb, float origin_len) {
 		Vector3 L = me.position - nb.position;	
-		float L_len = L.sqrMagnitude;
+		float L_len = L.magnitude;
 		Vector3 F_hook = -K_HOOK * (L_len - origin_len) * L / L_len;
-		Vector3 F_damp = -K_DAMP * Vector3.Dot((me.velocity - nb.velocity), L) * L / L.magnitude;
+		Vector3 F_damp = -K_DAMP * Vector3.Dot((me.velocity - nb.velocity), L) * L / L.sqrMagnitude;
 		return F_hook + F_damp;
 	}
 //++++++++++++++++++++++++++++++ spring mass system +++++++++++++++++++++++++++++++++++++++
@@ -379,7 +372,7 @@ public class ColorCube : MonoBehaviour {
     }
 
     IEnumerator vanishing() {
-        StopCoroutine("slightly_movement");
+        StopCoroutine("realistic_movement");
         yield return new WaitForEndOfFrame();
         int i, j, k, cnt;
         //target positions

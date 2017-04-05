@@ -17,7 +17,7 @@ public class CubeController : MonoBehaviour {
     //color pallate when x,y,z = 1;
     public Color corner111;
 
-    bool test = false;
+    bool test = true;
     GameObject current_cube;
     GameObject cube_temp0;
     GameObject cube_temp1;
@@ -112,7 +112,6 @@ public class CubeController : MonoBehaviour {
                 //y_axis
                 split_color = (corner000.g + corner111.g) * 0.5f;
                 Destroy(current_cube);
-          
 
                 //new halves positions
                 pos0 = new Vector3(0, 0.25f * ColorCube.EDGE_LENGTH * y, 0);
