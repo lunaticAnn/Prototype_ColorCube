@@ -51,6 +51,7 @@ public class controller : MonoBehaviour {
         float r = Mathf.Abs(everage.r - target.r);
         float g = Mathf.Abs(everage.g - target.g);
         float b = Mathf.Abs(everage.b - target.b);
+        Debug.Log(r + g + b);
         if (r + g + b < delta) {
             // celebrate
             count.idx += 1;
