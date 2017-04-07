@@ -150,7 +150,7 @@ public class CubeController : MonoBehaviour {
 
     IEnumerator changing_force() {      
         int i = 0;
-        force_field.set_radius(new Vector3(2f, 2f, 2f));           
+        force_field.set_radius(new Vector3(1f, 1f, 1f));           
         while (i < 6) {
             force_field.set_strength(20f);
             i++;
