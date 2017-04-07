@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class controller : MonoBehaviour {
 
+    public Color[] colors;
+
     public static controller instance;
 
     public float delta;
@@ -25,11 +27,17 @@ public class controller : MonoBehaviour {
 	void Update () {
         updateColor();
         checkLevel();
+        checkpress();
     }
 
     void levelUp() {
         // set level
-        target = new Color(Random.Range(0, 255) / 255.0f, Random.Range(0, 255) / 255.0f, Random.Range(0, 255) / 255.0f);
+        if (count.idx < colors.Length) {
+            target = colors[count.idx];
+            count.idx += 1;
+        } else {
+            target = new Color(Random.Range(0, 255) / 255.0f, Random.Range(0, 255) / 255.0f, Random.Range(0, 255) / 255.0f);
+        }
     }
 
     void updateColor() {
@@ -45,6 +53,16 @@ public class controller : MonoBehaviour {
         float b = Mathf.Abs(everage.b - target.b);
         if (r + g + b < delta) {
             // celebrate
+            count.idx += 1;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+    }
+
+    void checkpress() {
+        if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick)) {
+            count.idx += 1;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        } else if (OVRInput.GetDown(OVRInput.Button.SecondaryThumbstick)) {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
