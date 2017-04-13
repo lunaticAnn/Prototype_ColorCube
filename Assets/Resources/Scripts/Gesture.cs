@@ -9,7 +9,7 @@ public class Gesture : MonoBehaviour {
     public float ratio;
     public float grow_time;
 
-    bool status, waiting;
+    bool status, waiting, split_delay;
 
     int dir;
     float dis;
@@ -17,6 +17,7 @@ public class Gesture : MonoBehaviour {
     void Awake() {
         status = false;
         waiting = false;
+        split_delay = false;
     }
     // Use this for initialization
     void Start () {
@@ -27,7 +28,7 @@ public class Gesture : MonoBehaviour {
 	void Update () {
         if (waiting) {
             update_select();
-        } else {
+        } else if (!split_delay) {
             update_status();
         }
 	}
@@ -98,8 +99,9 @@ public class Gesture : MonoBehaviour {
     }
 
     IEnumerator coGrow() {
+        split_delay = true;
         float now = wave.transform.localScale.x;
-        float target = 500 - now;
+        float target = 400 - now;
 
         for (float res = grow_time; res > 0; res -= 0.025f) {
             float r = (1 - res / grow_time) * target + now;
@@ -108,5 +110,6 @@ public class Gesture : MonoBehaviour {
         }
 
         wave.transform.localScale = new Vector3(0, 0, 1);
+        split_delay = false;
     }
 }
