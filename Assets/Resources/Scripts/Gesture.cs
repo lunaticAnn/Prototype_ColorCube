@@ -81,6 +81,7 @@ public class Gesture : MonoBehaviour {
         set_info();
         CubeController.instance.split_cube(dir);
         StartCoroutine(coGrow());
+        StepCounter.instance.inc();
         waiting = true;
     }
 

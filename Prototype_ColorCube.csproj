@@ -131,6 +131,7 @@
     <Compile Include="Assets\Resources\Scripts\ForceField.cs" />
     <Compile Include="Assets\Resources\Scripts\Gesture.cs" />
     <Compile Include="Assets\Resources\Scripts\Hand.cs" />
+    <Compile Include="Assets\Resources\Scripts\StepCounter.cs" />
     <Compile Include="Assets\Resources\Scripts\TestMask.cs" />
     <Compile Include="Assets\Resources\Scripts\controller.cs" />
     <Compile Include="Assets\Resources\Scripts\count.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="Assets\Resources\Scripts\magic.cs" />
     <Compile Include="Assets\Resources\Scripts\magicleft.cs" />
     <Compile Include="Assets\Resources\Scripts\magicright.cs" />
+    <Compile Include="Assets\Resources\Scripts\resetReflect.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
