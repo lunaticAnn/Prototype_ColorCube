@@ -10,7 +10,6 @@ public class magic : MonoBehaviour {
     float lasttime, sumtime;
     bool flag;
 
-    public float a, b;
     private void Awake() {
         sumtime = 0;
         lasttime = 0;
@@ -30,13 +29,10 @@ public class magic : MonoBehaviour {
         }
 
         float tmp = (reference.transform.position - transform.position).y;
-        a = tmp;
-        b = sumtime - lasttime;
-        if (tmp < -dis)
-        {
+        if (tmp < -dis) {
             lasttime = sumtime;
         }
-        else if (tmp > dis && sumtime - lasttime <= delaytime) {
+        else if (tmp > dis && sumtime - lasttime <= deltatime && sumtime < 0.5f) {
             trigger();
         }
 	}
