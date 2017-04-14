@@ -32,7 +32,7 @@ public class magic : MonoBehaviour {
         if (tmp < -dis) {
             lasttime = sumtime;
         }
-        else if (tmp > dis && sumtime - lasttime <= deltatime && sumtime < 0.5f) {
+        else if (tmp > dis && sumtime - lasttime <= deltatime && sumtime > 0.5f) {
             trigger();
         }
 	}
