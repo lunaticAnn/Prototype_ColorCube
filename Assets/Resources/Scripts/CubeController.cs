@@ -18,6 +18,8 @@ public class CubeController : MonoBehaviour {
     public Color corner111;
     public ForceField force_field;
 
+    Color[] last_step = new Color[2];
+
     bool test = false;
     GameObject current_cube;
     GameObject cube_temp0;
@@ -33,16 +35,27 @@ public class CubeController : MonoBehaviour {
             instance = this;
         else
             Destroy(gameObject);
-
+        
         //initialize force field
         force_field = new ForceField(ForceField.forcetype.sphere, 0f, Vector3.one);       
     }
 
 	// Use this for initialization
-	void Start () {
+	void Start () {      
         current_cube = create_color_cube(x, y, z, Vector3.zero, corner000, corner111, false);
-	}
+        last_step[0] = corner000;
+        last_step[1] = corner111;
+    }
 
+    // only when it is a whole cube that you can flip one step back
+    public bool OneStepBack() {
+        if (last_step[0] == corner000 && last_step[1] == corner111) return false;
+        current_cube.GetComponent<ColorCube>().delete_me(false);
+        current_cube = create_color_cube(x, y, z, Vector3.zero, last_step[0], last_step[1]);
+        corner000 = last_step[0];
+        corner111 = last_step[1] ;
+        return true;
+    }
     // Update is called once per frame
     void Update() {
         switch (st) {
@@ -54,6 +67,8 @@ public class CubeController : MonoBehaviour {
                     split_cube(1);
                 else if ( Input.GetKeyDown(KeyCode.D))
                     split_cube(2);
+                else if (Input.GetKeyDown(KeyCode.B))
+                    OneStepBack();
                 return;
             case cube_state.wait_choose:
                 if (OVRInput.GetDown(OVRInput.Button.One))
@@ -97,6 +112,8 @@ public class CubeController : MonoBehaviour {
         float split_color;
         Vector3 pos0, pos1;
         st = cube_state.wait_choose;
+        last_step[0] = corner000;
+        last_step[1] = corner111;
 
         switch (a) {
             case 0:
