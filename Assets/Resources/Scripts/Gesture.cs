@@ -47,6 +47,12 @@ public class Gesture : MonoBehaviour {
             set_wave();
         }
         status = new_status;
+
+        if ((!status) && OVRInput.GetDown(OVRInput.Button.Three)) {
+            if (CubeController.instance.OneStepBack()) {
+                StepCounter.instance.dec();
+            }
+        }
     }
 
     void set_wave() {
@@ -90,11 +96,6 @@ public class Gesture : MonoBehaviour {
         if (OVRInput.GetDown(OVRInput.Button.One)) {
             waiting = false;
             // right.gameObject.transform.position
-        }
-        if (OVRInput.GetDown(OVRInput.Button.Three))
-        {
-            waiting = false;
-            // left.gameObject.transform.position
         }
     }
 

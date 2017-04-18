@@ -34,4 +34,8 @@ public class StepCounter : MonoBehaviour {
     public void inc() {
         step += 1;
     }
+
+    public void dec() {
+        step -= 1;
+    }
 }
