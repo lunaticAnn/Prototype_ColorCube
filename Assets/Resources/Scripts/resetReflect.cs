@@ -12,7 +12,7 @@ public class resetReflect : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyDown(KeyCode.R)) {
+        if (Input.GetKeyDown(KeyCode.P)) {
             resetY();
         }
 	}

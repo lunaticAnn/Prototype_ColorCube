@@ -66,6 +66,7 @@ public class Gesture : MonoBehaviour {
         }
 
         wave.transform.localScale = new Vector3(dis * ratio, dis * ratio, 1);
+        wave.transform.position = (right.pos + left.pos) * 0.5f;
     }
 
     void set_info() {
@@ -101,6 +102,7 @@ public class Gesture : MonoBehaviour {
 
     IEnumerator coGrow() {
         split_delay = true;
+        wave.transform.position = Vector3.zero;
         float now = wave.transform.localScale.x;
         float target = 400 - now;
 
