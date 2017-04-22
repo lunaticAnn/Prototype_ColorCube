@@ -69,7 +69,7 @@ public class CubeController : MonoBehaviour {
                 else if (Input.GetKeyDown(KeyCode.D))
                     split_cube(2);
                 else if (Input.GetKeyDown(KeyCode.B))
-                    success();
+                    OneStepBack();
                 return;
             case cube_state.wait_choose:
                 if (OVRInput.GetDown(OVRInput.Button.One))

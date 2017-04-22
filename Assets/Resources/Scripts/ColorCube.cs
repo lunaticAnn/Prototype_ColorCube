@@ -416,6 +416,7 @@ public class ColorCube : MonoBehaviour {
 
     IEnumerator onSuccess()
     {
+        yield return new WaitForSeconds(1f);
         StopCoroutine("realistic_movement");
         yield return new WaitForEndOfFrame();
         int i, j, k, cnt;

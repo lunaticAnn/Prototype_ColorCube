@@ -11,6 +11,7 @@ public class controller : MonoBehaviour {
 
     public float delta;
     Color target, everage;
+    bool suc = false;
 
     private void Awake() {
         if (instance == null) instance = this;
@@ -26,7 +27,8 @@ public class controller : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         updateColor();
-        checkLevel();
+        if(!suc)
+            checkLevel();
         checkpress();
     }
 
@@ -53,9 +55,16 @@ public class controller : MonoBehaviour {
         float b = Mathf.Abs(everage.b - target.b);
         if (r < delta && g < delta && b < delta) {
             // celebrate
+            suc = true;
             count.idx += 1;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            CubeController.instance.success();
+            Invoke("change_scene", 10f); 
         }
+    }
+
+    void change_scene() {
+        suc = false;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void checkpress() {
