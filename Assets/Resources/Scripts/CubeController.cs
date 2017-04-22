@@ -11,6 +11,7 @@ public class CubeController : MonoBehaviour {
     public enum cube_state {free, wait_choose};
     public cube_state st;
     public Transform righthand;
+    public GameObject success_particles;
 
     //color pallate when x,y,z = 0;
     public Color corner000;
@@ -21,6 +22,7 @@ public class CubeController : MonoBehaviour {
     Color[] last_step = new Color[2];
 
     bool test = false;
+    bool callsuccess = false;
     GameObject current_cube;
     GameObject cube_temp0;
     GameObject cube_temp1;
@@ -60,15 +62,14 @@ public class CubeController : MonoBehaviour {
     void Update() {
         switch (st) {
             case cube_state.free:
-                
                 if (Input.GetKeyDown(KeyCode.A))
                     split_cube(0);
                 else if (Input.GetKeyDown(KeyCode.S))
                     split_cube(1);
-                else if ( Input.GetKeyDown(KeyCode.D))
+                else if (Input.GetKeyDown(KeyCode.D))
                     split_cube(2);
                 else if (Input.GetKeyDown(KeyCode.B))
-                    OneStepBack();
+                    success();
                 return;
             case cube_state.wait_choose:
                 if (OVRInput.GetDown(OVRInput.Button.One))
@@ -177,6 +178,13 @@ public class CubeController : MonoBehaviour {
         yield return new WaitForEndOfFrame();
     }
 
+    public void success() {
+        if (!callsuccess)
+        {
+            current_cube.SendMessage("onSuccess");
+            callsuccess=true;
+        }
+    }
 
 
     void choose(int i) {

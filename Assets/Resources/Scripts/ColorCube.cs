@@ -193,6 +193,7 @@ public class ColorCube : MonoBehaviour {
 		Debug.Log("Initialize finished.");
 
 		//create lines here
+        //=============OPTIMIZATION FOR WEAKER MACHINES:alternative method slightly movement.===================
 		StartCoroutine("realistic_movement");
 	}
 
@@ -410,6 +411,67 @@ public class ColorCube : MonoBehaviour {
             yield return new WaitForEndOfFrame();
         }
         Destroy(gameObject);
+    }
+
+
+    IEnumerator onSuccess()
+    {
+        StopCoroutine("realistic_movement");
+        yield return new WaitForEndOfFrame();
+        int i, j, k, cnt;
+        //target positions
+        for (cnt = 0; cnt < vertice_cnt; cnt++)
+        {
+            pos[cnt] += new Vector3(Random.value - 0.5f, Random.value - 0.5f, Random.value - 0.5f);
+        }
+
+        for (cnt = 0; cnt < 60; cnt++)
+        {
+            int current_alive = _par.GetParticles(pars);
+            if (current_alive != vertice_cnt)
+            {
+                Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
+            }
+            for (i = 0; i < x; i++)
+                for (j = 0; j < y; j++)
+                    for (k = 0; k < z; k++)
+                    {
+                        Color _c = pars[indexed_xyz[i, j, k]].GetCurrentColor(_par);
+                        pars[indexed_xyz[i, j, k]].startColor = _c - DELTA_V * (_c - new Color(1, 1, 1, 0.1f));
+                        pars[indexed_xyz[i, j, k]].startSize += 0.05f;
+                    }
+            _par.SetParticles(pars, vertice_cnt);
+            update_pos_cubelines();
+            yield return new WaitForEndOfFrame();
+        }
+        Instantiate(CubeController.instance.success_particles);
+        for (cnt = 0; cnt < vertice_cnt; cnt++)
+        {
+            pos[cnt] += new Vector3(Random.value - 0.5f, Random.value - 0.5f, Random.value - 0.5f);
+        }
+        for (cnt = 0; cnt < 90; cnt++)
+        {
+            int current_alive = _par.GetParticles(pars);
+            if (current_alive != vertice_cnt)
+            {
+                Debug.LogError(current_alive + "Particle number does not match vertices number, check initialization order.");
+            }
+            for (i = 0; i < x; i++)
+                for (j = 0; j < y; j++)
+                    for (k = 0; k < z; k++)
+                    {
+                        Color _c = pars[indexed_xyz[i, j, k]].GetCurrentColor(_par);
+                        pars[indexed_xyz[i, j, k]].startColor = _c - 0.01f * DELTA_V * (_c - new Color(1, 1, 1, 0f));
+                        pars[indexed_xyz[i, j, k]].startSize *= 0.98f;
+                    }
+            _par.SetParticles(pars, vertice_cnt);
+            update_pos_cubelines();
+            yield return new WaitForEndOfFrame();
+        }
+
+       
+        Destroy(gameObject);
+        
     }
 }
 
