@@ -46,6 +46,9 @@ public class Gesture : MonoBehaviour {
         if (new_status) {
             set_wave();
         }
+        if (!status  && new_status) {
+            SoundManager.instance.PlaySfx(SoundManager.instance.RingAppear);
+        }
         status = new_status;
 
         if ((!status) && OVRInput.GetDown(OVRInput.Button.Three)) {

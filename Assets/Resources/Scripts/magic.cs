@@ -43,8 +43,10 @@ public class magic : MonoBehaviour {
 
     protected IEnumerator waiting(GameObject obj) {
         flag = true;
+        AudioSource ad = SoundManager.instance.PlaySfx(SoundManager.instance.Flame);
         yield return new WaitForSeconds(delaytime);
         Destroy(obj);
         flag = false;
+        SoundManager.instance.stop_play(ad);
     }
 }

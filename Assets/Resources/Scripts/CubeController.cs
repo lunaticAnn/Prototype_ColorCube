@@ -76,6 +76,7 @@ public class CubeController : MonoBehaviour {
                 {
                     float dis0 = Vector3.Distance(cube_temp0.transform.position, righthand.position);
                     float dis1 = Vector3.Distance(cube_temp1.transform.position, righthand.position);
+                    SoundManager.instance.PlaySfx(SoundManager.instance.Select, righthand.position);
                     if (dis0 - dis1 < 0f)
                         choose(0);
                     else

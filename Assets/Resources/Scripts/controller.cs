@@ -34,6 +34,7 @@ public class controller : MonoBehaviour {
 
     void levelUp() {
         // set level
+        SoundManager.instance.PlaySfx(SoundManager.instance.success);
         if (count.idx < colors.Length) {
             target = colors[count.idx];
             count.idx += 1;
